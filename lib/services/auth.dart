@@ -30,42 +30,6 @@ Future<bool> register(String email, String password) async {
   }
 }
 
-Future<void> addPro(String name, String location) async {
-  String uid = FirebaseAuth.instance.currentUser.uid;
-  DocumentReference documentReference = FirebaseFirestore.instance
-      .collection('Users')
-      .doc(uid)
-      .collection('Project')
-      .doc(name);
-
-  documentReference.set({'projectName': name, 'location': location});
-}
-
-Future<bool> addCoin(String id, String amount) async {
-  try {
-    String uid = FirebaseAuth.instance.currentUser.uid;
-    var value = double.parse(amount);
-    DocumentReference documentReference = FirebaseFirestore.instance
-        .collection('Users')
-        .doc(uid)
-        .collection('Coins')
-        .doc(id);
-    FirebaseFirestore.instance.runTransaction((transaction) async {
-      DocumentSnapshot snapshot = await transaction.get(documentReference);
-      if (!snapshot.exists) {
-        documentReference.set({'Amount': value});
-        return true;
-      }
-      double newAmount = snapshot.data()['Amount'] + value;
-      transaction.update(documentReference, {'Amount': newAmount});
-      return true;
-    });
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
 Future<bool> removeProject(String name) async {
   String uid = FirebaseAuth.instance.currentUser.uid;
   FirebaseFirestore.instance
@@ -77,42 +41,46 @@ Future<bool> removeProject(String name) async {
   return true;
 }
 
-Future<void> addProject(String name, String location) async {
+Future<void> addProject(String name, String location, geolocation) async {
   String uid = FirebaseAuth.instance.currentUser.uid;
-  DocumentReference project = FirebaseFirestore.instance
+  CollectionReference project = FirebaseFirestore.instance
       .collection("Users")
       .doc(uid)
-      .collection("Project")
-      .doc(name);
+      .collection("Project");
 
-  project.set({'projectName': name, 'location': location});
+  project.add(
+      {'projectName': name, 'location': location, 'geolocation': geolocation});
+
   return;
 }
 
 Future<void> addMembers(String name, String position) async {
   String uid = FirebaseAuth.instance.currentUser.uid;
-  DocumentReference project = FirebaseFirestore.instance
+
+  CollectionReference project = FirebaseFirestore.instance
       .collection("Users")
       .doc(uid)
-      .collection("Members")
-      .doc(name);
+      .collection("Members");
 
-  project.set({
+  project.add({
     'membersName': name,
     'membersPosition': position,
+    'progress': 0.0,
   });
   return;
 }
 
-Future<void> addImage(String url) async {
+Future<void> updateProgress(double progress) async {
   String uid = FirebaseAuth.instance.currentUser.uid;
 
   DocumentReference project = FirebaseFirestore.instance
       .collection("Users")
       .doc(uid)
-      .collection("Image")
-      .doc(url);
+      .collection("Members")
+      .doc();
 
-  project.set({'url': url});
+  project.update({
+    'progress': progress,
+  });
   return;
 }

@@ -1,121 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:project_progress_app/screens/home/home.dart';
-import 'package:project_progress_app/services/auth.dart';
+import 'package:project_progress_app/screens/authenticate/register.dart';
+import 'package:project_progress_app/screens/authenticate/sign_in.dart';
 
 class Authentication extends StatefulWidget {
-  Authentication({Key key}) : super(key: key);
+  final Function toggleView;
+  Authentication({this.toggleView});
 
   @override
   _AuthenticationState createState() => _AuthenticationState();
 }
 
 class _AuthenticationState extends State<Authentication> {
-  TextEditingController _emailField = TextEditingController();
-  TextEditingController _passwordField = TextEditingController();
+  bool showSignIn = true;
+  void toggleView() {
+    //print(showSignIn.toString());
+    setState(() => showSignIn = !showSignIn);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          color: Colors.blue[300],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Project Progress ',
-              style: TextStyle(fontSize: 25),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height / 35),
-            Container(
-              width: MediaQuery.of(context).size.width / 1.3,
-              child: TextFormField(
-                style: TextStyle(color: Colors.white),
-                controller: _emailField,
-                decoration: InputDecoration(
-                  hintText: "example@email.com",
-                  hintStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                  labelText: "Email",
-                  labelStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height / 35),
-            Container(
-              width: MediaQuery.of(context).size.width / 1.3,
-              child: TextFormField(
-                style: TextStyle(color: Colors.white),
-                controller: _passwordField,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "password",
-                  hintStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                  labelText: "Password",
-                  labelStyle: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height / 35),
-            Container(
-              width: MediaQuery.of(context).size.width / 1.4,
-              height: 45,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0),
-                color: Colors.white,
-              ),
-              child: MaterialButton(
-                onPressed: () async {
-                  bool shouldNavigate =
-                      await register(_emailField.text, _passwordField.text);
-                  if (shouldNavigate) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Home(),
-                      ),
-                    );
-                  }
-                },
-                child: Text("Register"),
-              ),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height / 35),
-            Container(
-              width: MediaQuery.of(context).size.width / 1.4,
-              height: 45,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15.0),
-                color: Colors.white,
-              ),
-              child: MaterialButton(
-                  onPressed: () async {
-                    bool shouldNavigate =
-                        await signIn(_emailField.text, _passwordField.text);
-                    if (shouldNavigate) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Home(),
-                        ),
-                      );
-                    }
-                  },
-                  child: Text("Login")),
-            ),
-          ],
-        ),
-      ),
-    );
+    if (showSignIn) {
+      return SignIn(toggleView: toggleView);
+    } else {
+      return Register(toggleView: toggleView);
+    }
   }
 }

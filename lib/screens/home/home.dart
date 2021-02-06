@@ -19,7 +19,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('List of Project'),
-        backgroundColor: Colors.blue[400],
+        backgroundColor: Colors.blueGrey,
         automaticallyImplyLeading: false,
         actions: <Widget>[
           FlatButton.icon(
@@ -35,7 +35,10 @@ class _HomeState extends State<Home> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          image: DecorationImage(
+            image: AssetImage('assets/d.jpg'),
+            fit: BoxFit.cover,
+          ),
         ),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -56,32 +59,31 @@ class _HomeState extends State<Home> {
 
                 return ListView(
                   children: snapshot.data.docs.map((document) {
-                    return RawMaterialButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MembersPage()),
-                        );
-                      },
-                      child: Card(
-                        elevation: 4,
-                        margin: EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    return Card(
+                      elevation: 4,
+                      margin: EdgeInsets.all(8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ListTile(
+                        title: Text("${document.data()['projectName']}"),
+                        subtitle: Text("${document.data()['location']}"),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              removeProject(document.id);
+                            });
+                          },
                         ),
-                        child: ListTile(
-                          title: Text("${document.id}"),
-                          subtitle: Text("${document.data()['location']}"),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              setState(() {
-                                removeProject(document.id);
-                              });
-                            },
-                          ),
-                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MembersPage(),
+                            ),
+                          );
+                        },
                       ),
                     );
                   }).toList(),
@@ -90,7 +92,11 @@ class _HomeState extends State<Home> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         onPressed: () {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => DetailsPage()));

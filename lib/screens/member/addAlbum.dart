@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -22,6 +23,7 @@ class _AddImageState extends State<AddImage> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Add Image'),
+          backgroundColor: Colors.blueGrey,
           actions: [
             FlatButton(
                 onPressed: () {
@@ -36,54 +38,65 @@ class _AddImageState extends State<AddImage> {
                 ))
           ],
         ),
-        body: Stack(
-          children: [
-            Container(
-              padding: EdgeInsets.all(4),
-              child: GridView.builder(
-                  itemCount: _image.length + 1,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2),
-                  itemBuilder: (context, index) {
-                    return index == 0
-                        ? Center(
-                            child: IconButton(
-                                icon: Icon(Icons.add),
-                                onPressed: () => !uploading
-                                    ? showChoiceDialog(context)
-                                    : null),
-                          )
-                        : Container(
-                            margin: EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: FileImage(_image[index - 1]),
-                                    fit: BoxFit.cover)),
-                          );
-                  }),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/d.jpg'),
+              fit: BoxFit.cover,
             ),
-            uploading
-                ? Center(
-                    child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        child: Text(
-                          'uploading...',
-                          style: TextStyle(fontSize: 20),
+          ),
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Stack(
+            children: [
+              Container(
+                padding: EdgeInsets.all(4),
+                child: GridView.builder(
+                    itemCount: _image.length + 1,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2),
+                    itemBuilder: (context, index) {
+                      return index == 0
+                          ? Center(
+                              child: IconButton(
+                                  icon: Icon(Icons.add),
+                                  onPressed: () => !uploading
+                                      ? showChoiceDialog(context)
+                                      : null),
+                            )
+                          : Container(
+                              margin: EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: FileImage(_image[index - 1]),
+                                      fit: BoxFit.cover)),
+                            );
+                    }),
+              ),
+              uploading
+                  ? Center(
+                      child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          child: Text(
+                            'uploading...',
+                            style: TextStyle(fontSize: 20),
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CircularProgressIndicator(
-                        value: val,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                      )
-                    ],
-                  ))
-                : Container(),
-          ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        CircularProgressIndicator(
+                          value: val,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.green),
+                        )
+                      ],
+                    ))
+                  : Container(),
+            ],
+          ),
         ));
   }
 
@@ -164,6 +177,10 @@ class _AddImageState extends State<AddImage> {
   @override
   void initState() {
     super.initState();
-    imgRef = FirebaseFirestore.instance.collection('photo');
+    String uid = FirebaseAuth.instance.currentUser.uid;
+    imgRef = FirebaseFirestore.instance
+        .collection('Users')
+        .doc(uid)
+        .collection('Photo');
   }
 }

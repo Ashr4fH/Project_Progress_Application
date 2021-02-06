@@ -4,7 +4,7 @@ import 'package:project_progress_app/screens/authenticate/authenticate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project_progress_app/screens/member/addmember.dart';
 import 'package:project_progress_app/screens/member/album.dart';
-import 'package:project_progress_app/screens/member/progress.dart';
+import 'package:project_progress_app/screens/member/progMember.dart';
 
 class MembersPage extends StatefulWidget {
   @override
@@ -19,7 +19,7 @@ class _MembersPageState extends State<MembersPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('List of Members'),
-        backgroundColor: Colors.blue[400],
+        backgroundColor: Colors.blueGrey,
         actions: <Widget>[
           FlatButton.icon(
             icon: Icon(Icons.person),
@@ -34,7 +34,10 @@ class _MembersPageState extends State<MembersPage> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          image: DecorationImage(
+            image: AssetImage('assets/d.jpg'),
+            fit: BoxFit.cover,
+          ),
         ),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -55,35 +58,34 @@ class _MembersPageState extends State<MembersPage> {
 
                 return ListView(
                   children: snapshot.data.docs.map((document) {
-                    return RawMaterialButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Progress(),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        elevation: 4,
-                        margin: EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    return Card(
+                      elevation: 4,
+                      margin: EdgeInsets.all(8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ListTile(
+                        title: Text("${document.data()['membersName']}"),
+                        subtitle: Text("${document.data()['progress']}%"),
+                        trailing: IconButton(
+                          icon: Icon(Icons.camera, color: Colors.black),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Album(),
+                              ),
+                            );
+                          },
                         ),
-                        child: ListTile(
-                          title: Text("${document.id}"),
-                          trailing: IconButton(
-                            icon: Icon(Icons.camera, color: Colors.black),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Album(),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProMembers(),
+                            ),
+                          );
+                        },
                       ),
                     );
                   }).toList(),
@@ -92,7 +94,11 @@ class _MembersPageState extends State<MembersPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         onPressed: () {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => AddMembers()));
